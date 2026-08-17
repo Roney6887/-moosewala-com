@@ -1,48 +1,175 @@
 <!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f5b900"><link rel="manifest" href="manifest.json">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Moosewala Com.</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;background:#0b0b0d;color:#fff}
-header{padding:18px 18px 8px;position:sticky;top:0;background:#0b0b0df2;backdrop-filter:blur(14px);z-index:2}
-.brand{display:flex;align-items:center;gap:10px}.logo{width:44px;height:44px;border-radius:12px;background:#f5b900;color:#111;display:grid;place-items:center;font-weight:900;font-size:20px}
-h1{font-size:20px;margin:0}.sub{font-size:10px;color:#999}.tabs{display:flex;gap:8px;padding:10px 18px;overflow:auto;position:sticky;top:80px;background:#0b0b0df2;z-index:2}.tab{border:0;border-radius:18px;padding:9px 15px;background:#202024;color:#bbb}.tab.active{background:#f5b900;color:#111;font-weight:700}
-main{padding:12px 18px 90px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card{background:#17171b;border:1px solid #29292e;border-radius:16px;padding:14px}.num{font-size:22px;font-weight:800;margin-top:5px}.muted{color:#999;font-size:12px}.section{margin:22px 0 10px;font-weight:800;font-size:17px}.btn{border:0;border-radius:13px;padding:13px 15px;background:#f5b900;color:#111;font-weight:800}.row{display:flex;gap:9px;flex-wrap:wrap}.item{background:#17171b;border:1px solid #29292e;border-radius:15px;padding:13px;margin:8px 0}.itemtop{display:flex;justify-content:space-between;gap:10px}.green{color:#4ade80}.search,input,select{width:100%;padding:13px;border-radius:12px;border:1px solid #333;background:#151518;color:#fff;margin:6px 0}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:end;z-index:5}.sheet{background:#151518;border-radius:24px 24px 0 0;padding:20px;width:100%;max-height:90vh;overflow:auto}.close{float:right;background:#333;color:#fff;border:0;border-radius:20px;padding:7px 11px}.empty{text-align:center;color:#777;padding:30px}
-</style></head><body>
-<header><div class="brand"><div class="logo">MC</div><div><h1>MOOSEWALA COM.</h1><div class="sub">MOBILE • GADGETS • ACCESSORIES</div></div></div></header>
-<nav class="tabs"><button class="tab active" onclick="show('home',this)">Home</button><button class="tab" onclick="show('stock',this)">Stock</button><button class="tab" onclick="show('sales',this)">Sales</button><button class="tab" onclick="show('reports',this)">Reports</button></nav>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0b0b0d;color:#fff}
+header{padding:18px;background:#111}h1{margin:0;font-size:22px}.sub{color:#999;font-size:11px}
+.tabs{display:flex;gap:8px;padding:10px;overflow:auto;background:#111}.tab{border:0;border-radius:18px;padding:10px 16px;background:#222;color:#aaa}.active{background:#f5b900;color:#111}
+main{padding:14px 12px 90px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.item{background:#17171b;border:1px solid #29292e;border-radius:16px;padding:14px}.muted{color:#999;font-size:12px}.num{font-size:22px;font-weight:800;margin-top:5px}.green{color:#4ade80}
+button{border:0;border-radius:12px;padding:12px 15px;background:#f5b900;color:#111;font-weight:800}.row{display:flex;gap:8px;flex-wrap:wrap}.section{font-size:18px;font-weight:800;margin:22px 0 10px}
+input,select{width:100%;padding:13px;margin:5px 0;border-radius:12px;border:1px solid #333;background:#151518;color:#fff}
+.item{margin:8px 0}.top{display:flex;justify-content:space-between}.modal{display:none;position:fixed;inset:0;background:#000c;align-items:end;z-index:5}.sheet{background:#151518;padding:20px;border-radius:24px 24px 0 0;width:100%;max-height:90%;overflow:auto}.empty{text-align:center;color:#777;padding:25px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📱 MOOSEWALA COM.</h1>
+<div class="sub">MOBILE • GADGETS • ACCESSORIES</div>
+</header>
+
+<nav class="tabs">
+<button class="tab active" onclick="show('home',this)">Home</button>
+<button class="tab" onclick="show('stock',this)">Stock</button>
+<button class="tab" onclick="show('sales',this)">Sales</button>
+<button class="tab" onclick="show('reports',this)">Reports</button>
+</nav>
+
 <main id="app"></main>
 
-<div class="modal" id="modal"><div class="sheet"><button class="close" onclick="closeModal()">✕</button><h2 id="modalTitle">Add Stock</h2><div id="form"></div></div></div>
+<div class="modal" id="modal">
+<div class="sheet">
+<h2 id="mt"></h2>
+<div id="form"></div>
+<br><button onclick="closeM()">Close</button>
+</div>
+</div>
+
 <script>
-let phones=JSON.parse(localStorage.mcPhones||'[]'), sales=JSON.parse(localStorage.mcSales||'[]');
-const money=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
-function save(){localStorage.mcPhones=JSON.stringify(phones);localStorage.mcSales=JSON.stringify(sales)}
-if(!phones.length){phones=[{id:crypto.randomUUID(),brand:'Apple',model:'iPhone 15 Pro',storage:'256GB',color:'Natural Titanium',imei1:'356789123456789',imei2:'356789123456797',buy:102500,sell:105000,sold:false},{id:crypto.randomUUID(),brand:'Samsung',model:'S24',storage:'256GB',color:'Onyx Black',imei1:'399123456789012',imei2:'399123456789020',buy:62000,sell:64999,sold:false}];save()}
-function show(page,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');window.page=page;render()}
-function render(){
- const a=document.getElementById('app'), stock=phones.filter(p=>!p.sold), sold=sales;
- if(page==='home')a.innerHTML=`<div class="grid">
- <div class="card"><div class="muted">Total Stock</div><div class="num">${stock.length}</div></div>
- <div class="card"><div class="muted">Stock Value</div><div class="num">${money(stock.reduce((s,p)=>s+p.buy,0))}</div></div>
- <div class="card"><div class="muted">Total Sales</div><div class="num">${money(sold.reduce((s,x)=>s+x.price,0))}</div></div>
- <div class="card"><div class="muted">Total Profit</div><div class="num green">${money(sold.reduce((s,x)=>s+x.price-x.buy,0))}</div></div></div>
- <div class="section">Quick Actions</div><div class="row"><button class="btn" onclick="addStock()">＋ Add Stock</button><button class="btn" onclick="newSale()">🛒 New Sale</button></div>
- <div class="section">Recent Sales</div>${sold.slice(-5).reverse().map(s=>saleHTML(s)).join('')||'<div class="empty">No sales yet</div>'}`;
- if(page==='stock')a.innerHTML=`<div class="row"><input class="search" id="q" placeholder="Search model, brand or IMEI" oninput="renderStock()"><button class="btn" onclick="addStock()">＋ Add Stock</button></div><div id="stockList"></div>`,renderStock();
- if(page==='sales')a.innerHTML=`<div class="row"><button class="btn" onclick="newSale()">＋ New Sale</button></div><div class="section">Sales History</div>${sold.slice().reverse().map(s=>saleHTML(s)).join('')||'<div class="empty">No sales yet</div>'}`;
- if(page==='reports')a.innerHTML=`<div class="grid"><div class="card"><div class="muted">Items Sold</div><div class="num">${sold.length}</div></div><div class="card"><div class="muted">Current Stock</div><div class="num">${stock.length}</div></div><div class="card"><div class="muted">Sales</div><div class="num">${money(sold.reduce((s,x)=>s+x.price,0))}</div></div><div class="card"><div class="muted">Profit</div><div class="num green">${money(sold.reduce((s,x)=>s+x.price-x.buy,0))}</div></div></div><div class="section">Backup</div><button class="btn" onclick="backup()">Export Data</button>`;
+let stock=JSON.parse(localStorage.msStock||'[]');
+let sales=JSON.parse(localStorage.msSales||'[]');
+
+function save(){
+localStorage.msStock=JSON.stringify(stock);
+localStorage.msSales=JSON.stringify(sales);
 }
-function renderStock(){let q=(document.getElementById('q')?.value||'').toLowerCase(), arr=phones.filter(p=>!p.sold && [p.brand,p.model,p.imei1,p.imei2].join(' ').toLowerCase().includes(q));document.getElementById('stockList').innerHTML=arr.map(p=>`<div class="item"><div class="itemtop"><b>${p.model}</b><b>${money(p.sell)}</b></div><div class="muted">${p.brand} • ${p.storage} • ${p.color}</div><div class="muted">IMEI 1: ${p.imei1}<br>IMEI 2: ${p.imei2}</div><div class="green">Expected Profit: ${money(p.sell-p.buy)}</div></div>`).join('')||'<div class="empty">No matching stock</div>'}
-function saleHTML(s){return `<div class="item"><div class="itemtop"><b>${s.model}</b><b>${money(s.price)}</b></div><div class="muted">${s.customer||'Walk-in Customer'} • ${s.payment}</div><div class="green">Profit: ${money(s.price-s.buy)}</div></div>`}
-function addStock(){openModal('Add New Stock',`<input id="brand" placeholder="Brand" value="Apple"><input id="model" placeholder="Model"><input id="storage" placeholder="RAM / Storage"><input id="color" placeholder="Colour"><input id="imei1" placeholder="IMEI 1" inputmode="numeric"><input id="imei2" placeholder="IMEI 2" inputmode="numeric"><input id="buy" placeholder="Purchase Price" inputmode="decimal"><input id="sell" placeholder="Selling Price" inputmode="decimal"><button class="btn" onclick="saveStock()">Add to Stock</button>`)}
-function saveStock(){let p={id:crypto.randomUUID(),brand:v('brand'),model:v('model'),storage:v('storage'),color:v('color'),imei1:v('imei1'),imei2:v('imei2'),buy:+v('buy')||0,sell:+v('sell')||0,sold:false};if(!p.model||!p.imei1)return alert('Model and IMEI 1 required');phones.unshift(p);save();closeModal();render()}
-function newSale(){let stock=phones.filter(p=>!p.sold);openModal('New Sale',`<select id="pid">${stock.map(p=>`<option value="${p.id}">${p.model} • ${p.imei1}</option>`).join('')}</select><input id="customer" placeholder="Customer Name"><input id="custphone" placeholder="Customer Mobile" inputmode="tel"><select id="payment"><option>Cash</option><option>UPI</option><option>Card</option><option>Credit</option></select><input id="price" placeholder="Sale Price" inputmode="decimal"><button class="btn" onclick="saveSale()">Complete Sale</button>`)}
-function saveSale(){let p=phones.find(x=>x.id===v('pid'));if(!p)return;let price=+v('price')||p.sell;p.sold=true;sales.push({id:crypto.randomUUID(),model:p.model,imei:p.imei1,buy:p.buy,price,customer:v('customer'),payment:v('payment'),date:new Date().toISOString()});save();closeModal();render()}
+function money(n){return '₹'+Math.round(n||0).toLocaleString('en-IN')}
+function show(p,b){
+document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+if(b)b.classList.add('active');
+page=p;render();
+}
+let page='home';
+
+function render(){
+let a=document.getElementById('app');
+let qty=stock.reduce((s,x)=>s+(+x.qty||0),0);
+let value=stock.reduce((s,x)=>s+(+x.buy||0)*(+x.qty||0),0);
+let revenue=sales.reduce((s,x)=>s+(+x.price||0),0);
+let profit=sales.reduce((s,x)=>s+(+x.price||0)-(+x.buy||0),0);
+
+if(page==='home'){
+a.innerHTML=`
+<div class="grid">
+<div class="card"><div class="muted">📦 TOTAL MAAL</div><div class="num">${qty}</div></div>
+<div class="card"><div class="muted">💰 STOCK VALUE</div><div class="num">${money(value)}</div></div>
+<div class="card"><div class="muted">🛒 TOTAL SALES</div><div class="num">${money(revenue)}</div></div>
+<div class="card"><div class="muted">💵 PROFIT</div><div class="num green">${money(profit)}</div></div>
+</div>
+<div class="section">Quick Actions</div>
+<div class="row"><button onclick="addStock()">＋ Add Stock</button><button onclick="sale()">🛒 New Sale</button></div>
+<div class="section">Recent Sales</div>
+${sales.slice(-5).reverse().map(s=>saleHTML(s)).join('')||'<div class="empty">No sales yet</div>'}`;
+}
+
+if(page==='stock'){
+a.innerHTML=`
+<div class="row"><button onclick="addStock()">＋ Add Stock</button></div>
+<div class="section">📦 Current Stock — ${qty} Phones</div>
+<input id="search" placeholder="Search model / IMEI" oninput="renderStock()">
+<div id="list"></div>`;
+renderStock();
+}
+
+if(page==='sales'){
+a.innerHTML=`<button onclick="sale()">＋ New Sale</button>
+<div class="section">Sales History</div>
+${sales.slice().reverse().map(s=>saleHTML(s)).join('')||'<div class="empty">No sales yet</div>'}`;
+}
+
+if(page==='reports'){
+a.innerHTML=`
+<div class="grid">
+<div class="card"><div class="muted">📦 STOCK</div><div class="num">${qty}</div></div>
+<div class="card"><div class="muted">🛒 SOLD</div><div class="num">${sales.length}</div></div>
+<div class="card"><div class="muted">💰 SALES</div><div class="num">${money(revenue)}</div></div>
+<div class="card"><div class="muted">💵 PROFIT</div><div class="num green">${money(profit)}</div></div>
+</div>`;
+}
+}
+
+function renderStock(){
+let q=(document.getElementById('search')?.value||'').toLowerCase();
+let arr=stock.filter(x=>(x.model+' '+x.brand+' '+x.imei1+' '+x.imei2).toLowerCase().includes(q));
+document.getElementById('list').innerHTML=arr.map(x=>`
+<div class="item">
+<div class="top"><b>${x.brand} ${x.model}</b><b>Qty: ${x.qty}</b></div>
+<div class="muted">${x.storage||''} • ${x.color||''}</div>
+<div class="muted">IMEI 1: ${x.imei1||'-'}<br>IMEI 2: ${x.imei2||'-'}</div>
+<div>Purchase: ${money(x.buy)} | Sale: ${money(x.sell)}</div>
+<div class="green">Profit/Phone: ${money(x.sell-x.buy)}</div>
+${x.qty<=2?'<b style="color:#ff6b6b">⚠️ LOW STOCK</b>':''}
+</div>`).join('')||'<div class="empty">No stock</div>';
+}
+
+function saleHTML(s){
+return `<div class="item"><div class="top"><b>${s.model}</b><b>${money(s.price)}</b></div>
+<div class="muted">Customer: ${s.customer||'Walk-in'} • ${s.payment}</div>
+<div class="green">Profit: ${money(s.price-s.buy)}</div></div>`;
+}
+
+function addStock(){
+openM('📦 Add New Stock',`
+<input id="brand" placeholder="Brand">
+<input id="model" placeholder="Model">
+<input id="storage" placeholder="RAM / Storage">
+<input id="color" placeholder="Colour">
+<input id="qty" placeholder="Quantity" type="number" value="1">
+<input id="imei1" placeholder="IMEI 1">
+<input id="imei2" placeholder="IMEI 2">
+<input id="buy" placeholder="Purchase Price / Phone" type="number">
+<input id="sell" placeholder="Selling Price / Phone" type="number">
+<button onclick="saveStock()">Add To Stock</button>`);
+}
+
+function saveStock(){
+let p={
+id:Date.now(),brand:v('brand'),model:v('model'),storage:v('storage'),
+color:v('color'),qty:+v('qty')||1,imei1:v('imei1'),imei2:v('imei2'),
+buy:+v('buy')||0,sell:+v('sell')||0};
+if(!p.model)return alert('Model required');
+stock.unshift(p);save();closeM();render();
+}
+
+function sale(){
+let available=stock.filter(x=>x.qty>0);
+if(!available.length)return alert('Stock khali hai');
+openM('🛒 New Sale',`
+<select id="pid">${available.map(x=>`<option value="${x.id}">${x.brand} ${x.model} — Qty ${x.qty}</option>`).join('')}</select>
+<input id="customer" placeholder="Customer Name">
+<input id="phone" placeholder="Customer Mobile">
+<select id="payment"><option>Cash</option><option>UPI</option><option>Card</option><option>Credit</option></select>
+<input id="price" placeholder="Sale Price" type="number">
+<button onclick="saveSale()">Complete Sale</button>`);
+}
+
+function saveSale(){
+let p=stock.find(x=>x.id==v('pid'));
+if(!p||p.qty<1)return;
+let price=+v('price')||p.sell;
+p.qty--;
+sales.push({model:p.brand+' '+p.model,buy:p.buy,price:price,
+customer:v('customer'),payment:v('payment'),date:new Date().toLocaleDateString()});
+stock=stock.filter(x=>x.qty>0);save();closeM();render();
+}
+
 function v(id){return document.getElementById(id)?.value||''}
-function openModal(t,f){modal.style.display='flex';modalTitle.textContent=t;form.innerHTML=f}
-function closeModal(){modal.style.display='none'}
-function backup(){let b=new Blob([JSON.stringify({phones,sales},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='moosewala-com-backup.json';a.click()}
-let page='home';render();
-</script></body></html>
+function openM(t,f){modal.style.display='flex';mt.textContent=t;form.innerHTML=f}
+function closeM(){modal.style.display='none'}
+render();
+</script>
+</body>
+</html>
